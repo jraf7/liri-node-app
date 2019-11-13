@@ -5,4 +5,7 @@ exports.spotify = {
   secret: process.env.SPOTIFY_SECRET
 };
 
-var keys = require("./keys.js");
+exports.seatGeek = {
+  id: process.env.SEATGEEK_ID,
+  secret: process.env.SEATGEEK_SECRET
+};
