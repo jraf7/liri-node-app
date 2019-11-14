@@ -9,18 +9,85 @@ let moment = require("moment");
 let spotify = new Spotify(keys.spotify);
 
 let action = process.argv[2];
-let search = process.argv.slice(3).join(" ");
+let input = process.argv.slice(3).join(" ");
 
-function goLiri(action, search) {
+function goConcert() {
+
+    let URL = `https://api.seatgeek.com/2/events?q=${input}&client_id=${keys.seatGeek.id}`
+
+    axios.get(URL).then(function (response) {
+        let concert = response.data.events[0];
+        console.log("-----------------------")
+        if (concert.title) {
+            console.log(`Event: ${concert.title}`)
+        }
+        if (concert.performers[0].name) {
+            console.log(`Performer: ${concert.performers[0].name}`)
+        }
+        if (concert.venue) {
+            console.log(`Venue: 
+    ${concert.venue.name}
+    ${concert.venue.city}, ${concert.venue.state}
+    ${moment(concert.datetime_local).format("MM/DD/YYYY")}`)
+            }
+            console.log("-----------------------")
+        })
+        .catch(function (error) {
+            console.log("An error has occured: " + error);
+        })
+
+};
+
+function goSong() {
+    spotify.search(
+        {
+        type: 'track',
+        query: `${input}`
+        }
+    ).then(function (error, response) {
+        if (error) {
+           return console.log("Error: " + error)
+       }
+      console.log(response);
+})
+}
+
+function goMovie() {
+    let URL = `http://www.omdbapi.com/?apikey=trilogy&t=${input}`
+    console.log("-----------------------")
+axios.get(URL).then( function (response) {
+    let movie = response.data
+    // console.log(movie)
+console.log(`
+Title: ${movie.Title}
+Year: ${movie.Year}
+Imdb Rating: ${movie.imdbRating}
+Rotten Tomatoes Rating: ${movie.Ratings[0].Value}
+Country: ${movie.Country}
+Language: ${movie.Language}
+Plot: ${movie.Plot}
+Actors ${movie.Actors}
+`)
+console.log("-----------------------")
+})
+};
+
+function goDo(input) {
+
+};
+
+function goLiri(action, input) {
     switch (action) {
         case ("concert-this"):
-            goConcert(search);
-            console.log("Searching for Concerts!")
+            goConcert(input);
+            console.log("Searching for Concerts.")
             break;
         case ("spotify-this-song"):
-            goSong();
+            goSong(input);
+            console.log("Searching for that song.")
             break;
         case ("movie-this"):
+            console.log("Searching for your movie.")
             goMovie();
             break;
         case ("do-what-it-says"):
@@ -29,44 +96,5 @@ function goLiri(action, search) {
         default:
             return "Invalid Input";
     }
-};
-
-goLiri(action, search);
-
-function goConcert(search) {
-
-    let URL = `https://api.seatgeek.com/2/events?q=${search}&client_id=${keys.seatGeek.id}`
-
-    axios.get(URL).then(function (response) {
-        let concert = response.data.events[0];
-        console.log("-----------------------")
-        console.log(`
-Event:
-    ${concert.title}
-Performer: 
-    ${concert.performers[0].name} 
-Venue: 
-    ${concert.venue.name}
-    ${concert.venue.city}
-    ${concert.venue.state}
-    ${moment(concert.datetime_local).format("MM/DD/YYYY")}
-        `)
-        console.log("-----------------------")
-    })
-    .catch(function (error) {
-        console.log("An error has occured: " + error);
-    })
-
-};
-
-    function goSong(search) {
-
-    };
-
-    function goMovie(search) {
-
-    };
-
-    function goDo(search) {
-
-    };
+}; 
+goLiri(action, input);
