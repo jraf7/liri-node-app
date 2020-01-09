@@ -35,12 +35,21 @@ function goConcert() {
 };
 
 function goSong(input) {
-    console.log(input)
+    console.log("-----------------------")
+    if (input === undefined) {
+        input = "The Sign";
+    }
     spotify.search({
         type: 'track',
-        query: `${input}`
+        query: input
     }).then(function (response) {
-        console.log(response);
+        let song = response.tracks
+        for (let i=0; i < 2; i++) {
+            console.log("Song name: " + song.items[i].name)
+            console.log("Album: " + song.items[i].album.name);
+            console.log("Artist(s): " + song.items[i].artists[0].name);
+            console.log("-----------------------")
+        }
     }).catch(function (error){
         console.log("Error: " + error)
     })
